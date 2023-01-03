@@ -49,7 +49,7 @@ class WeightedLoss(nn.Module):
         sse = sse_loss(output, target)
 
         if self.optimize: 
-            loss = torch.sigmoid(self.alpha) * ssw + torch.sigmoid(self.beta) * sse
+            loss = torch.exp(self.alpha) * ssw + torch.exp(self.beta) * sse
         else: 
             loss = self.alpha * ssw + self.beta * sse
 
