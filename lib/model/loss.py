@@ -4,6 +4,8 @@ import torch.nn as nn
 from torch.nn.modules.container import Sequential
 from torch import Tensor 
 
+import torchbnn as bnn 
+
 def ssw_loss(model: Sequential) -> Tensor: 
     """Description. 
     Compute sum of squared weights using l2 norm."""
@@ -29,18 +31,28 @@ def mape_loss(output: Tensor, target: Tensor) -> float:
 
 class WeightedLoss(nn.Module):
     """Description. 
-    Implement custom loss as weighted combination of sum of squared errors (SSE) and sum squared weights (SSW)."""
+    Implement custom loss as weighted combination of sum of squared errors (SSE) and sum squared weights (SSW).
+    
+    Attributes: 
+        - alpha: initial weighting related to sum of weights squared
+        - beta: initial weighting related to sum of squared errors
+        - optimize: indicating whether alpha and beta are trainable
+        - kl: weight related to KL divergence in the loss function."""
 
-    def __init__(self, alpha: float, beta: float, optimize: bool=False):
+    def __init__(self, alpha: float, beta: float, kl_weight: float=0., optimize: bool=False):
         super(WeightedLoss, self).__init__()
         self.optimize = optimize
 
         if self.optimize: 
             self.alpha = torch.nn.Parameter(torch.tensor(alpha, requires_grad=True))
-            self.beta = torch.nn.Parameter(torch.tensor(beta, requires_grad=True))
+            self.beta = torch.nn.Parameter(torch.tensor(beta, requires_grad=True)) 
+            self.kl_weight = torch.nn.Parameter(torch.tensor(kl_weight, requires_grad=True))
         else: 
             self.alpha = torch.tensor(alpha) 
-            self.beta = torch.tensor(beta) 
+            self.beta = torch.tensor(beta)
+            self.kl_weight = torch.tensor(kl_weight) 
+
+        self.kl_loss = bnn.BKLLoss(reduction="mean", last_layer_only=False)
 
     def forward(self, model: Sequential, output: Tensor, target: Tensor) -> Tensor: 
         """Description. Apply weighted loss function as forward pass."""
@@ -53,4 +65,8 @@ class WeightedLoss(nn.Module):
         else: 
             loss = self.alpha * ssw + self.beta * sse
 
-        return loss
+        if self.kl_weight != 0:
+            kl = self.kl_loss(model) 
+            loss = loss + torch.sigmoid(self.kl_weight) * kl 
+    
+        return loss 
