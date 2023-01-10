@@ -1,2 +1,2 @@
-from .dataset import create_backtest_dataset 
-from .plot import backtest_plot
+from .dataset import create_backtest_dataset, generate_price_distribution
+from .plot import backtest_plot, plot_predicted_distribution

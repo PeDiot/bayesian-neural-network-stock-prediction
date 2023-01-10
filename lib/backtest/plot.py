@@ -45,3 +45,34 @@ def backtest_plot(
 
     axes[1].set_xlim([x_start, x_end])
     axes[1].set_title("Predicted VS actual")
+
+def plot_predicted_distribution(predicted_prices: DataFrame, date: str, plot_dims: Tuple=(18, 6)): 
+    """Description. 
+    Make KDE plot and boxplot for distribution of predicted prices at a given date."""
+
+    fig, axes = plt.subplots(ncols=2, figsize=plot_dims)
+    fig.suptitle(f"Distribution of predicted prices for {date}", size=14)
+
+    sns.kdeplot(
+        data=predicted_prices, 
+        x=date, 
+        shade=True, 
+        bw_adjust=.25, 
+        ax=axes[0])
+
+    sns.boxplot(
+        data=predicted_prices, 
+        x=date, 
+        flierprops={"marker": "x"},
+        boxprops={"facecolor": (.4, .6, .8, .5)},
+        medianprops={"color": "coral"},
+        showmeans=True,
+        meanprops={"marker": "+", "markersize": "14"}, 
+        ax=axes[1])
+
+    for ax in axes: 
+        ax.set_xlabel("Price ($)")
+        ax.set_ylabel(" ")
+        
+    axes[0].set_title("Kernel Density Estimate (KDE) plot")
+    axes[1].set_title("Boxplot")
