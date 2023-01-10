@@ -3,28 +3,45 @@ from lib.dataset.preprocess import  unscale_tensor
 from lib.model.loss import mape_loss 
 
 import pandas as pd 
+import numpy as np 
+
+from torch import Tensor
 
 from pandas.core.frame import DataFrame 
 from torch.nn.modules.container import Sequential
-from typing import Tuple
+from typing import (
+    Tuple, 
+    Optional, 
+    Union
+) 
 
-def create_backtest_dataset(model: Sequential, data: Data, training: bool=False) -> Tuple: 
+def create_backtest_dataset(
+    data: Data, 
+    model: Optional[Sequential]=None, 
+    preds: Optional[Union[np.ndarray, Tensor]]=None, 
+    training: bool=False
+) -> Tuple: 
     """Description. 
     Return pandas DataFrame with days, actual, predicted values as columns and MAPE.
     
     Attributes: 
-        - model: neural network 
         - data: Data object with training and test sets
+        - model: optional neural network model 
+        - preds: optional vector of predictions 
         - training: training indicator."""
+        
 
     if training: 
-        preds = model(data._X_train)
+        if model != None and preds == None:
+            preds = model(data._X_train)
+            preds = unscale_tensor(x=preds, scaler=data.scaler_y)
         y = data._y_train
     else:
-        preds = model(data.X_test) 
+        if model != None and preds == None:
+            preds = model(data.X_test) 
+            preds = unscale_tensor(x=preds, scaler=data.scaler_y)
         y = data.y_test
 
-    preds = unscale_tensor(x=preds, scaler=data.scaler_y)
     y = unscale_tensor(x=y, scaler=data.scaler_y)
 
     n = len(y)
