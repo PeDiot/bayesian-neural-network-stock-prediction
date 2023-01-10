@@ -43,4 +43,8 @@ def _scale(X: np.ndarray, scaler: MinMaxScaler, fit: bool=False) -> np.ndarray:
 def unscale_tensor(x: Tensor, scaler: MinMaxScaler) -> np.ndarray: 
     """Description. Return unscaled numpy array."""
 
-    return scaler.inverse_transform(x.detach().numpy())
+    x = x.detach().numpy()
+    if len(x.shape) == 1: 
+        x = x.reshape(-1, 1)
+    
+    return scaler.inverse_transform(x)
