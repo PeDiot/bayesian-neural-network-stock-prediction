@@ -68,14 +68,7 @@ class WeightedLoss(nn.Module):
             self.kl_weight = torch.tensor(kl_weight) 
 
         self.kl_loss = bnn.BKLLoss(reduction="mean", last_layer_only=False)
-
-    def _rescale(self) -> Tensor: 
-        """Description. Rescale parameters between 0 and 1."""
-        params = torch.tensor([self.alpha.item(), self.beta.item()])
-        m = nn.Softmax(dim=0) 
-
-        return m(params)
-
+        
     def forward(self, model: Sequential, output: Tensor, target: Tensor) -> Tensor: 
         """Description. Apply weighted loss function as forward pass."""
                 
@@ -83,7 +76,6 @@ class WeightedLoss(nn.Module):
         sse = sse_loss(output, target)
 
         if self.optimize: 
-            # _alpha, _beta = self._rescale()
             loss = torch.exp(self.alpha) * ssw + torch.exp(self.beta) * sse
         else: 
             loss = self.alpha * ssw + self.beta * sse
