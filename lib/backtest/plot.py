@@ -46,12 +46,19 @@ def backtest_plot(
     axes[1].set_xlim([x_start, x_end])
     axes[1].set_title("Predicted VS actual")
 
-def plot_predicted_distribution(predicted_prices: DataFrame, date: str, plot_dims: Tuple=(18, 6)): 
+def plot_predicted_distribution(
+    predicted_prices: DataFrame, 
+    date: str, 
+    model_name: str, 
+    plot_dims: Tuple=(18, 6)
+): 
     """Description. 
     Make KDE plot and boxplot for distribution of predicted prices at a given date."""
 
     fig, axes = plt.subplots(ncols=2, figsize=plot_dims)
-    fig.suptitle(f"Distribution of predicted prices for {date}", size=14)
+
+    title = f"Distribution of predicted prices for {date} | Model={model_name}"
+    fig.suptitle(title, size=14)
 
     sns.kdeplot(
         data=predicted_prices, 
