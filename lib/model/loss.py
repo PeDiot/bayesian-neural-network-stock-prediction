@@ -39,20 +39,42 @@ class WeightedLoss(nn.Module):
         - optimize: indicating whether alpha and beta are trainable
         - kl: weight related to KL divergence in the loss function."""
 
-    def __init__(self, alpha: float, beta: float, kl_weight: float=0., optimize: bool=False):
+    def __init__(
+        self, 
+        alpha: float, 
+        beta: float, 
+        kl_weight: float=0., 
+        optimize: bool=False, 
+        optimize_kl: bool=False
+    ):
         super(WeightedLoss, self).__init__()
+
         self.optimize = optimize
+        self.optimize_kl = optimize_kl 
 
         if self.optimize: 
             self.alpha = torch.nn.Parameter(torch.tensor(alpha, requires_grad=True))
             self.beta = torch.nn.Parameter(torch.tensor(beta, requires_grad=True)) 
-            self.kl_weight = torch.nn.Parameter(torch.tensor(kl_weight, requires_grad=True))
         else: 
             self.alpha = torch.tensor(alpha) 
             self.beta = torch.tensor(beta)
+
+        if self.optimize_kl:
+            self.kl_weight = torch.nn.Parameter(torch.tensor(kl_weight, requires_grad=True))
+        else: 
+            if kl_weight < 0 or kl_weight > 1: 
+                raise ValueError("kl_weight must be in [0, 1].")
+                
             self.kl_weight = torch.tensor(kl_weight) 
 
         self.kl_loss = bnn.BKLLoss(reduction="mean", last_layer_only=False)
+
+    def _rescale(self) -> Tensor: 
+        """Description. Rescale parameters between 0 and 1."""
+        params = torch.tensor([self.alpha.item(), self.beta.item()])
+        m = nn.Softmax(dim=0) 
+
+        return m(params)
 
     def forward(self, model: Sequential, output: Tensor, target: Tensor) -> Tensor: 
         """Description. Apply weighted loss function as forward pass."""
@@ -61,12 +83,17 @@ class WeightedLoss(nn.Module):
         sse = sse_loss(output, target)
 
         if self.optimize: 
+            # _alpha, _beta = self._rescale()
             loss = torch.exp(self.alpha) * ssw + torch.exp(self.beta) * sse
         else: 
             loss = self.alpha * ssw + self.beta * sse
 
         if self.kl_weight != 0:
             kl = self.kl_loss(model) 
-            loss = loss + torch.sigmoid(self.kl_weight) * kl 
+
+            if self.optimize_kl:
+                loss = loss + torch.sigmoid(self.kl_weight) * kl 
+            else:
+                loss = loss + self.kl_weight * kl 
     
         return loss 
