@@ -9,7 +9,7 @@ def backtest_plot(
     df_backtest: DataFrame, 
     mape: float, 
     period: Tuple,
-    plot_dims: Tuple=(17, 7)): 
+    plot_dims: Tuple=(17, 6)): 
     """Description. 
     Visualize model"s performance: actual vs predicted prices & mape."""
 
