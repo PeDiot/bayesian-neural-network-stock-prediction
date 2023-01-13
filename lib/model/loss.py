@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from torch.nn.modules.container import Sequential
 from torch import Tensor 
+from torchmetrics import MeanAbsolutePercentageError
 
 import torchbnn as bnn 
 
@@ -27,7 +28,8 @@ def mape_loss(output: Tensor, target: Tensor) -> float:
     if not isinstance(target, Tensor): 
         target = torch.tensor(target)
 
-    return torch.mean(torch.abs(output - target)).item()
+    mape = MeanAbsolutePercentageError()
+    return mape(output, target).item()
 
 class WeightedLoss(nn.Module):
     """Description. 
