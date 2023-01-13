@@ -58,7 +58,7 @@ def plot_predicted_distribution(
 
     fig, axes = plt.subplots(ncols=2, figsize=plot_dims)
 
-    title = f"Distribution of predicted prices for {ticker} | Date = {date}| Model={model_name}"
+    title = f"Distribution of predicted prices for {ticker} | Date = {date} | Model={model_name}"
     fig.suptitle(title, size=14)
 
     sns.kdeplot(
