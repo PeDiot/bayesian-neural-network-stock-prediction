@@ -15,7 +15,7 @@ $$
 where $x_{k_, t}$ is the value of a the $k$-th feature and $p_t$ be the stock price at time $t$. The objective of the Bayesian ANN is to learn a function $g$ which models the relation between the features $\mathrm{x}_t$ and the target $p_t$.
 
 $$
-g(\mathrm{x}_t) = \mathrm{x}_t \mapsto b_o + \sum_{l=1}^L w_{l, o} \times \text{tanh}\Big( b_l + \sum_{k=1}^K w_{k, l}x_{k, t} \Big) \quad ; \quad \mathrm{x}_t \in \mathbb{R}^K
+g(\mathrm{x}_t) = b_o + \sum_{l=1}^L w_{l, o} \times \text{tanh}\Big( b_l + \sum_{k=1}^K w_{k, l}x_{k, t} \Big) \quad ; \quad \mathrm{x}_t \in \mathbb{R}^K
 $$
 
 where: 
@@ -56,8 +56,8 @@ $$
 
 |  **Stock** | Frequentist ANN  | Bayesian ANN |
 |---|---|---|
-|  Microsoft (MSFT) | 0.64%   | 0.78 | 
-|  Goldman Sachs (GS) | 1.12%  | 1.68  |
+|  Microsoft (MSFT) | 0.64%   | 0.78% | 
+|  Goldman Sachs (GS) | 1.12%  | 1.68%  |
 
 ### Performance of the bayesian ANN
 
