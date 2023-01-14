@@ -6,14 +6,16 @@ Inspired by the [A Bayesian regularized artificial neural network for stock mark
 
 ## Model 
 
-Let $\mathrm{x}_t = (x_{1, t}, \dots, x_{K, t})^T$ be the input vector where $x_{k_, t}$ is the value of a the $k$-th feature and $p_t$ be the stock price at time $t$. The objective of the Bayesian ANN is to learn a function $g$ which models the relation between the features $\mathrm{x}_t$ and the target $p_t$.
+Let denote $\mathrm{x}_t$ the input vector defined as: 
 
 $$
-g :=
-\begin{cases}
-    & \mathbb{R}^{K} \to \mathbb{R} \\
-    & \mathrm{x}_t \mapsto b_o + \sum_{l=1}^L w_{l, o} \times \text{tanh}\Big( b_l + \sum_{k=1}^K w_{k, l}x_{k, t} \Big)
-\end{cases}
+\mathrm{x}_t = (x_{1, t}, \dots, x_{K, t})^{'}
+$$
+
+where $x_{k_, t}$ is the value of a the $k$-th feature and $p_t$ be the stock price at time $t$. The objective of the Bayesian ANN is to learn a function $g$ which models the relation between the features $\mathrm{x}_t$ and the target $p_t$.
+
+$$
+g(\mathrm{x}_t) = \mathrm{x}_t \mapsto b_o + \sum_{l=1}^L w_{l, o} \times \text{tanh}\Big( b_l + \sum_{k=1}^K w_{k, l}x_{k, t} \Big) \quad ; \quad \mathrm{x}_t \in \mathbb{R}^K
 $$
 
 where: 
@@ -36,24 +38,28 @@ where $\bar{\pi}(.)$ is the posterior distribution, $\underline{\pi}(.)$ the pri
 As the neural network under study incorporates a Bayesian regularization term, the expression of the loss function becomes: 
 
 $$
-{\mathcal{L}(\mathrm{w}) = \beta E_{D}+\alpha E_{w}} \quad \text{where }
-\begin{cases}
-    E_{D}=\sum_{t=1}^{T}  {(p_{t} - \hat{p_{t}})}^2 \\\\
-    E_{\mathrm{w}}=\sum_{l=1}^{L} \Big( \big( \sum_{k=1}^{K} w_{k,l}^2\big) + b_l^2 + w_{l,o}^2 \Big) + b_o^2
-\end{cases}
+{\mathcal{L}(\mathrm{w}) = \beta E_{D}+\alpha E_{w}} 
+$$
+
+where, 
+
+$$
+\begin{aligned}
+    E_{D} & =\sum_{t=1}^{T}  {(p_{t} - \hat{p_{t}})}^2 \\\\
+    E_{\mathrm{w}} &=\sum_{l=1}^{L} \Big( \big( \sum_{k=1}^{K} w_{k,l}^2\big) + b_l^2 + w_{l,o}^2 \Big) + b_o^2
+\end{aligned}
 $$
 
 ## Results 
 
-### Performance of the bayesian ANN
-
-***Test MAPE table***
+### Test MAPE comparison
 
 |  **Stock** | Frequentist ANN  | Bayesian ANN |
 |---|---|---|
 |  Microsoft (MSFT) | 0.64%   | 0.78 | 
-|  Goldman Sachs (GS) | 1.12%  | 1.68  | 
+|  Goldman Sachs (GS) | 1.12%  | 1.68  |
 
+### Performance of the bayesian ANN
 
 ![](imgs/msft-test-bnn-kl-5hn.png)
 
