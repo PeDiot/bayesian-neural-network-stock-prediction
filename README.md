@@ -38,7 +38,7 @@ where $\bar{\pi}(.)$ is the posterior distribution, $\underline{\pi}(.)$ the pri
 As the neural network under study incorporates a Bayesian regularization term, the expression of the loss function becomes: 
 
 $$
-{\mathcal{L}(\mathrm{w}) = \beta E_{D}+\alpha E_{w}} 
+{\mathcal{L}(\mathrm{w}) = \beta E_{D}+\alpha E_{\mathrm{w}}} 
 $$
 
 where, 
